@@ -34,3 +34,47 @@ npm i express pug http-status-codes body-parser
   }
 }
 ```
+
+アプリケーションのディレクトリ構造を準備します。
+```bash
+mkdir views
+mkdir controllers
+mkdir public
+mkdir public/css
+mkdir public/js
+mkdir public/img
+```
+
+## メインアプリケーションの準備
+メインアプリケーションの`main.js`を下記の様に記述します。
+
+```javascript
+const express = require("express");
+const app = express();
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+app.set("port", process.env.PORT || 3000);
+
+app.get("/", (req, res) => {
+	res.send("Welcom to Express");
+});
+
+app.listen(app.get("port"), () => {
+	console.log("server start http://localhost:%d/", app.get("port"));
+});
+```
+
+実際に、アプリケーションを実行してみます。
+```bash
+npm start
+```
+```bash
+> node_js12express@1.0.0 start
+> node main.js
+
+server start http://localhost:3000/
+```
+
+これで、Webブラウザで `http://localhost:3000/`にアクセスすると **Welcom to Express** と表示されているでしょう。
