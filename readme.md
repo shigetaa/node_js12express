@@ -78,3 +78,39 @@ server start http://localhost:3000/
 ```
 
 これで、Webブラウザで `http://localhost:3000/`にアクセスすると **Welcom to Express** と表示されているでしょう。
+
+## さらに経路を追加する
+経路を処理する`./controllers/homeController.js`を以下の様に記述していきます。
+```javascript
+exports.showCourses = (req, res) => {
+	res.render("course");
+}
+exports.showSignUp = (req, res) => {
+	res.render("contact");
+}
+exports.postedSignUpForm = (req, res) => {
+	res.render("thanks");
+}
+```
+そして、`main.js`に読み込む処理を記述します。
+```javascript
+const express = require("express");
+const app = express();
+const homeController = require("./controllers/homeController");
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+app.set("port", process.env.PORT || 3000);
+
+app.get("/", (req, res) => {
+	res.send("Welcom to Express");
+});
+app.get("/courses", homeController.showCourses);
+app.get("/contact", homeController.showSignUp);
+app.post("/contact", homeController.postedSignUpForm);
+
+app.listen(app.get("port"), () => {
+	console.log("server start http://localhost:%d/", app.get("port"));
+});
+```
