@@ -114,3 +114,109 @@ app.listen(app.get("port"), () => {
 	console.log("server start http://localhost:%d/", app.get("port"));
 });
 ```
+## ビューへのルーティング
+Express.js のおかげで、ビューが見やすくなり、レンダリングも容易になるはずです。
+ビューは下記の物を作成します。
+
+| ファイル名           | 用途                                                     |
+| :------------------- | :------------------------------------------------------- |
+| views/_layout.pug    | アプリケーションの主なスタイリングとナビゲーションの基礎 |
+| views/index.pug      | ホームページのコンテンツを生成                           |
+| views/courses.pug    | コースコンテンツを表示                                   |
+| views/contact.pug    | 連絡用フォームを表示                                     |
+| views/thanks.pug     | 投稿完了時を表示                                         |
+| views/errors/404.pug | ページが見つからない時のエラーメッセージを表示           |
+| views/errors/500.pug | 内部エラー時のエラーメッセージを表示                     |
+
+最初に、レンダリングエンジンの読み込みを`main.js`に宣言します。
+`app.set("view engine", "pug");`
+
+レイアウト用のビューを`views/_layout.pug`に記述します。
+```pug
+doctype html
+html(lang="ja")
+  head
+    title= title
+  body
+    block contents
+```
+
+連絡用フォームのビューを`views/contact.pug`に記述します。
+```pug
+extends _layout.pug
+
+block contents
+  form(action="/contact", method="post")
+    label(for="name") Name 
+    input#name(type="text", name="name")
+    label(for="email") Email
+    input#email(type="email" name="email")
+    input(type="submit", value="Submit")
+
+```
+
+投稿完了時のビューを`views/thanks.pug`に記述します。
+```pug
+extends _layout.pug
+
+block contents
+  h1 contact thanks
+
+```
+
+ホームページ用のビューを`views/index.pug`に記述します。
+```pug
+extends _layout.pug
+
+block contents
+  h1 Welcom to Express
+
+```
+## 動的コンテンツをビューに渡す
+コースコンテンツに表示する、コースのリストは頻繁に変更するので、アプリケーションで表示するコースは、JavaScript オブジェクトの配列に代入してビューに渡して表示します。
+`controllers/homeController.js`に記述します。
+```javascript
+exports.showIndex = (req, res) => {
+	res.render("index");
+}
+exports.showCourses = (req, res) => {
+	let courses = [
+		{
+			title: "Event Driven Cakes",
+			cost: 50
+		},
+		{
+			title: "Asynchronous Artichoke",
+			cost: 25
+		},
+		{
+			title: "Object Oriented Orange Juice",
+			cost: 10
+		}
+	];
+	res.render("course", { courses: courses });
+}
+exports.showSignUp = (req, res) => {
+	res.render("contact");
+}
+exports.postedSignUpForm = (req, res) => {
+	res.render("thanks");
+}
+```
+
+コースコンテンツ用のビューを`views/course.pug`に記述します。
+```pug
+extends _layout.pug
+
+block contents
+  h1 Our Courses
+  each course in courses
+    h5 #{course.title}
+    span #{course.cost}
+
+```
+
+## エラーを処理する
+
+
+## 静的なビューを供給する
