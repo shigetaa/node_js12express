@@ -6,7 +6,7 @@ const errorController = require("./controllers/errorController");
 app.set("view engine", "pug");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
+app.use(express.static("public"));
 app.set("port", process.env.PORT || 3000);
 
 

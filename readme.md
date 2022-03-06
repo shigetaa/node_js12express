@@ -217,6 +217,60 @@ block contents
 ```
 
 ## エラーを処理する
+クライアントからのアクセス時、ページが無い時のエラー(404)Not Found、サーバー内部エラー(500)Internal Server Error、が発生した時に、クライアントに返すレスポンス表示用ページを処理する`controllers/errorController.js`とビュー`views/errors/404.pug` `views/errors/500.pug`を作成していきます。
 
+エラー処理コントローラ`controllers/errorController.js`を記述します。
+```javascript
+const httpStatus = require("http-status-codes");
 
-## 静的なビューを供給する
+exports.pageNotFoundError = (req, res) => {
+	let errorCode = httpStatus.NOT_FOUND;
+	res.status(errorCode);
+	res.render(`errors/${errorCode}`);
+};
+
+exports.internalServerError = (error, req, res, next) => {
+	let errorCode = httpStatus.INTERNAL_SERVER_ERROR;
+	console.log(`ERROR occurred: ${error.stack}`);
+	res.status(errorCode);
+	res.render(`errors/${errorCode}`);
+};
+```
+
+エラービュー`views/errors/404.pug`を記述します。
+```javascript
+extends ../_layout.pug
+
+block contents
+  h1 NotFound
+```
+
+エラービュー`views/errors/500.pug`を記述します。
+```javascript
+extends ../_layout.pug
+
+block contents
+  h1 Internal Server Error
+```
+
+メインアプリケーション`main.js`にエラー処理を読み込むコード
+`const errorController = require("./controllers/errorController");`
+そして、エラー処理用にミドルウェア関数を追加
+```javascript
+app.use(errorController.pageNotFoundError);
+app.use(errorController.internalServerError);
+```
+
+ついでに、静的なビューを有効にするコードも追記しておきます。
+`app.use(express.static("public"));`
+
+以上のファイルを作成したら、以下のコードを実行してアプリケーションが動作するか確認します。
+```bash
+npm start
+```
+```bash
+> node_js12express@1.0.0 start
+> node main.js
+
+server start http://localhost:3000/
+```
